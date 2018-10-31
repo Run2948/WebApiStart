@@ -13,9 +13,6 @@ namespace Learning.WebApi.Controllers
 {
     //对于整个Controller强制使用Https
     //[ForceHttps()]
-    //对于整个Controller强制使用基础授权认证
-    //TODO: Apply Security Here
-    [LearningAuthorize]
     public class CoursesController : BaseApiController
     {
         public CoursesController(ILearningRepository repo)
