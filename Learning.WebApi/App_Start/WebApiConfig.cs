@@ -21,6 +21,12 @@ namespace Learning.WebApi
             var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
             jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
+            // 在全局设置中，把所有返回的格式清除，设置JSON。所有的返回的xml格式都会被清除
+            //config.Formatters.Clear();
+            //config.Formatters.Add(new JsonMediaTypeFormatter());
+            // 等同于：
+            //GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
+
             #endregion
 
             #region 在Web Api中强制使用Https
@@ -32,6 +38,9 @@ namespace Learning.WebApi
             #region 自定义的“Controller Selector”
             //Replace the controller configuration selector
             config.Services.Replace(typeof(IHttpControllerSelector), new LearningControllerSelector((config)));
+            // 自定义返回Json格式数据
+            config.Services.Replace(typeof(IContentNegotiator), new JsonContentNegotiator(jsonFormatter));
+
             #endregion
 
             #region 在Web Api中配置CacheCow,使用本机内存实现缓存的功能
@@ -68,7 +77,7 @@ namespace Learning.WebApi
             );
 
             config.Routes.MapHttpRoute(
-                name: "Students",
+                name: "Students1",
                 routeTemplate: "api/v1/students/{userName}",
                 defaults: new { controller = "students", userName = RouteParameter.Optional }
             );

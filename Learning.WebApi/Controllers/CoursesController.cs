@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Learning.Data.Entities;
+using Learning.Data.Repositories;
+using Learning.WebApi.Models;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Routing;
-using Learning.Data;
-using Learning.Data.Entities;
-using Learning.Data.Repositories;
 using Learning.WebApi.Filters;
-using Learning.WebApi.Models;
 
 namespace Learning.WebApi.Controllers
 {
     //对于整个Controller强制使用Https
-    [Learning.WebApi.Filters.ForceHttps()]
+    //[ForceHttps()]
     //对于整个Controller强制使用基础授权认证
+    //TODO: Apply Security Here
     [LearningAuthorize]
     public class CoursesController : BaseApiController
     {
@@ -23,7 +22,7 @@ namespace Learning.WebApi.Controllers
             : base(repo)
         {
         }
-        
+
         public Object Get(int page = 0, int pageSize = 10)
         {
             IQueryable<Course> query;
@@ -50,7 +49,6 @@ namespace Learning.WebApi.Controllers
                 NextPageLink = nextLink,
                 Results = results
             };
-
         }
 
         public HttpResponseMessage GetCourse(int id)
@@ -66,19 +64,19 @@ namespace Learning.WebApi.Controllers
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
-
             }
             catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
-        [Learning.WebApi.Filters.ForceHttps()]
+
+        //TODO: Apply Https Here
+        [ForceHttps()]
         public HttpResponseMessage Post([FromBody] CourseModel courseModel)
         {
             try
             {
-
                 var entity = TheModelFactory.Parse(courseModel);
 
                 if (entity == null) Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Could not read subject/tutor from body");
@@ -94,7 +92,6 @@ namespace Learning.WebApi.Controllers
             }
             catch (Exception ex)
             {
-
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
@@ -105,7 +102,6 @@ namespace Learning.WebApi.Controllers
         {
             try
             {
-
                 var updatedCourse = TheModelFactory.Parse(courseModel);
 
                 if (updatedCourse == null) Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Could not read subject/tutor from body");
@@ -129,7 +125,6 @@ namespace Learning.WebApi.Controllers
                 {
                     return Request.CreateResponse(HttpStatusCode.NotModified);
                 }
-
             }
             catch (Exception ex)
             {
@@ -161,7 +156,6 @@ namespace Learning.WebApi.Controllers
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
-
             }
             catch (Exception ex)
             {

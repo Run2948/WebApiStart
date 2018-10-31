@@ -56,7 +56,6 @@ namespace Learning.WebApi.Filters
 
         private string[] GetCredentials(System.Net.Http.Headers.AuthenticationHeaderValue authHeader)
         {
-
             //Base 64 encoded string
             var rawCred = authHeader.Parameter;
             var encoding = Encoding.GetEncoding("iso-8859-1");

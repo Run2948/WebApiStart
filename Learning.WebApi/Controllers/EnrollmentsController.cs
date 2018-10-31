@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Learning.Data.Entities;
+using Learning.Data.Repositories;
+using Learning.WebApi.Filters;
+using Learning.WebApi.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Learning.Data;
-using Learning.Data.Entities;
-using Learning.Data.Repositories;
-using Learning.WebApi.Filters;
-using Learning.WebApi.Models;
 
 namespace Learning.WebApi.Controllers
 {
-   
     public class EnrollmentsController : BaseApiController
     {
         public EnrollmentsController(ILearningRepository repo)
@@ -36,19 +34,18 @@ namespace Learning.WebApi.Controllers
                         .Select(s => TheModelFactory.Create(s));
 
             return results;
-
         }
 
         [Route("api/enrollments/{courseName}/{studentName?}")]
         public IEnumerable<StudentBaseModel> GetStudentsInfo(string courseName, string studentName = "")
         {
             IQueryable<Student> query;
-            Course course=  TheRepository.GetAllCourses().Where(c => c.Name == courseName).FirstOrDefault();
-            if (course==null )
+            Course course = TheRepository.GetAllCourses().FirstOrDefault(c => c.Name == courseName);
+            if (course == null)
             {
-                return null ;
+                return null;
             }
-             query = TheRepository.GetEnrolledStudentsInCourse(course.Id).OrderBy(s => s.LastName);
+            query = TheRepository.GetEnrolledStudentsInCourse(course.Id).OrderBy(s => s.LastName);
             if (!string.IsNullOrWhiteSpace(studentName))
             {
                 query = query.Where(s => s.FirstName == studentName);
@@ -63,14 +60,14 @@ namespace Learning.WebApi.Controllers
                         .Select(s => TheModelFactory.Create(s));
 
             return results;
-
         }
-         [LearningAuthorize]
+
+        //TODO: Apply Security Here
+        [LearningAuthorize]
         public HttpResponseMessage Post(int courseId, [FromUri]string userName, [FromBody]Enrollment enrollment)
         {
             try
             {
-
                 if (!TheRepository.CourseExists(courseId)) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Could not find Course");
 
                 var student = TheRepository.GetStudent(userName);
@@ -88,7 +85,6 @@ namespace Learning.WebApi.Controllers
                 }
 
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
-
             }
             catch (Exception ex)
             {
